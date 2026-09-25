@@ -1,0 +1,21 @@
+{
+  "system": "ExampleDesk",
+  "columns": {
+    "id": "Ticket ID",
+    "created": "Date Created",
+    "first_responded": "First Response",
+    "resolved": "Date Closed",
+    "status": "Status",
+    "technician": "Assigned To",
+    "group": "Team",
+    "requester": "Requester",
+    "requester_email": "Requester Email",
+    "subject": "Summary",
+    "description": "Details",
+    "is_overdue": "SLA Breached"
+  },
+  "datetime_format": "%m/%d/%Y %I:%M %p",
+  "source_timezone": "America/New_York",
+  "status_map": {"Closed - Resolved": "Closed", "Awaiting User": "Pending"},
+  "true_values": ["yes", "true", "1"]
+}

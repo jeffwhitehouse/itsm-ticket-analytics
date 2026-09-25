@@ -11,12 +11,37 @@ the two, then breaks real demand into categories and work types you can plan aga
 ## Pipeline
 
 ```
-export (Freshservice / ServiceDesk Plus / CSV)
+export (ServiceNow / Jira SM / Zendesk / Freshservice / Freshdesk / SDP / ConnectWise / Autotask / any CSV)
   -> adapters/*.py            normalized tickets.csv (SCHEMA.md)
   -> itsm_analytics.classify  stream / category / work type / language per ticket
   -> itsm_analytics.analyze   report.json (all the numbers)
   -> itsm_analytics.report    report.html (single file, inline SVG, prints cleanly)
 ```
+
+## Supported ticket systems
+
+Each adapter turns that system's API export into the normalized schema in `SCHEMA.md`. They read export
+files from a folder rather than calling the API themselves, so no credentials ever touch this tool; the
+docstring at the top of each adapter gives the exact endpoint and parameters to export with.
+
+| System | Adapter | Export it reads | First response | SLA / overdue |
+|---|---|---|---|---|
+| ServiceNow | `servicenow.py` | Table API (`incident` or any task table) | not on the record (lives in `task_sla`) | `made_sla` |
+| Jira Service Management | `jira_service_management.py` | `/rest/api/3/search/jql` | SLA custom field (`--first-response-field`) | SLA custom fields |
+| Zendesk | `zendesk.py` | incremental export or `/tickets` with `users,groups,metric_sets` | `reply_time_in_minutes` | none per ticket |
+| Freshservice | `freshservice.py` | `/api/v2/tickets?include=requester,stats` | `stats.first_responded_at` | `is_escalated`, `fr_escalated` |
+| Freshdesk | `freshdesk.py` | `/api/v2/tickets?include=requester,stats` | `stats.first_responded_at` | `is_escalated`, `fr_escalated` |
+| ServiceDesk Plus (Cloud) | `servicedeskplus.py` | API v3 `/requests` | `responded_time` | `is_overdue`, `is_first_response_overdue` |
+| ConnectWise PSA | `connectwise_psa.py` | `/service/tickets` (board = group) | `dateResponded` | `isInSla` |
+| Autotask PSA | `autotask.py` | `/Tickets/query` (+ optional resources, contacts, picklists) | `firstResponseDateTime` | `serviceLevelAgreementHasBeenMet` |
+| Anything else | `csv_mapped.py` | any CSV report + a column map (`mappings/example.json`) | if the report has it | if the report has it |
+
+`csv_mapped.py` covers systems without a dedicated adapter (HaloPSA, SysAid, Zoho Desk, TOPdesk, osTicket,
+GLPI and so on): export a ticket report to CSV, copy `mappings/example.json`, and fill in which column holds
+which field, the date format and the time zone the export uses.
+
+Exports from several systems can be concatenated after normalizing (the `system` column keeps them
+apart), which is useful for a before/after view across a tool migration.
 
 ## Try it on synthetic data
 
@@ -28,7 +53,8 @@ python -m itsm_analytics.report   report.json --out report.html
 python -m unittest discover -s tests
 ```
 
-No dependencies beyond the Python 3.10+ standard library.
+No dependencies beyond the Python 3.10+ standard library. One exception on Windows: Python ships no time zone
+database there, so adapters run with `--tz <Region/City>` need `pip install tzdata` (`--tz UTC` works without it).
 
 ## How classification works
 

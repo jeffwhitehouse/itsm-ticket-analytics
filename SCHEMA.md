@@ -1,7 +1,8 @@
 # Normalized ticket schema
 
 One CSV row per ticket, UTF-8, header row required. The adapters in `adapters/` produce this from
-Freshservice and ServiceDesk Plus API exports; anything else just needs a small mapping script.
+ServiceNow, Jira Service Management, Zendesk, Freshservice, Freshdesk, ServiceDesk Plus, ConnectWise PSA and
+Autotask exports; anything else goes through `adapters/csv_mapped.py` with a column map.
 
 | Column | Required | Notes |
 |---|---|---|
@@ -16,7 +17,7 @@ Freshservice and ServiceDesk Plus API exports; anything else just needs a small 
 | `requester`, `requester_email` | `requester_email` yes | The sender address drives stream detection (machine mail vs people). |
 | `subject` | yes | |
 | `description` | | Plain text; the first ~800 chars are used for fallback classification. |
-| `is_overdue`, `is_fr_overdue` | | `true`/`false`. |
+| `is_overdue`, `is_fr_overdue` | | `true`/`false`, or empty when the source system does not track it (overdue shares are computed over known values only). |
 
 Times should already be in the helpdesk's local time zone (the adapters convert with `--tz`), so
 hour-of-day and business-day numbers mean what people expect.

@@ -39,6 +39,12 @@ def truthy(x):
     return str(x).strip().lower() in ("true", "1", "yes")
 
 
+def flag_pct(rows, key):
+    """Share of rows flagged true, over rows where the source system reports the flag at all (None if none do)."""
+    known = [r for r in rows if str(r.get(key) or "").strip()]
+    return pct(sum(truthy(r[key]) for r in known), len(known)) if known else None
+
+
 def business_days(a, b):
     d, n = a.date(), 0
     while d <= b.date():
@@ -108,8 +114,7 @@ def analyze(rows, cfg, start=None, end=None):
 
     sla = {"median_res_h": med(r["res_h"] for r in user), "p90_res_h": p90(r["res_h"] for r in user),
            "median_fr_h": med(r["fr_h"] for r in user), "same_day_pct": pct(sum(1 for r in user if r["res_h"] is not None and r["res_h"] <= 8), len(user)),
-           "fr_overdue_pct": pct(sum(truthy(r.get("is_fr_overdue")) for r in user), len(user)),
-           "overdue_pct": pct(sum(truthy(r.get("is_overdue")) for r in user), len(user))}
+           "fr_overdue_pct": flag_pct(user, "is_fr_overdue"), "overdue_pct": flag_pct(user, "is_overdue")}
 
     open_rows = [r for r in rows if not r["_r"] and (r.get("status") or "").lower() not in ("closed", "resolved", "cancelled", "canceled")]
     def age(r):
