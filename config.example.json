@@ -1,0 +1,28 @@
+{
+  "organization": "Example Co",
+  "timezone": "America/New_York",
+  "internal_domains": ["example.com"],
+  "personal_domains": ["gmail.com", "icloud.com", "yahoo.com", "hotmail.com", "outlook.com"],
+
+  "process_senders": {
+    "disableduser@": "Auto: Disabled-user lifecycle task",
+    "newhardwarerequest@": "Auto: New laptop request intake",
+    "newaccountrequest@": "Auto: New account request",
+    "itreports@": "Auto: Scheduled IT report"
+  },
+  "extra_alert_senders": ["noreply@example.com", "erp-notify@"],
+
+  "alert_sources": [
+    {"label": "Alert: RMM", "sender": "^rmm@example\\.com", "subject": "^alert: \\["},
+    {"label": "Alert: EDR / SOC", "sender": "^edr@example\\.com"},
+    {"label": "Alert: firewall", "sender": "^firewall@example\\.com"}
+  ],
+
+  "line_of_business_apps": [
+    {"category": "ERP / accounting system", "subject": "\\berp\\b|netsuite|dynamics", "description": "\\berp\\b|netsuite"},
+    {"category": "Time entry app", "subject": "time ?keeper|time ?sheet|missed punch|clock(ing)? (in|out)", "description": "time ?sheet|missed punch"}
+  ],
+
+  "technician_aliases": {"Sam": "Sam Rivera", "Rivera, Sam": "Sam Rivera"},
+  "teams": {"Helpdesk": ["Sam Rivera", "Alex Chen"], "Inventory": ["Jordan Lee"]}
+}

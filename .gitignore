@@ -1,0 +1,46 @@
+# Local configuration - never commit real environment details
+config.json
+*.local.json
+.env
+.env.*
+!.env.example
+
+# Credentials
+*.key
+*.pem
+*.pfx
+*.p12
+*.crt
+credentials*
+token*
+*_rsa
+*_ed25519
+
+# Output and artifacts
+output/
+reports/
+*.log
+*.tmp
+HostSecurityAudit-*/
+
+# OS cruft
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editors
+.vscode/
+.idea/
+*.swp
+
+# real data and outputs - never commit
+*.csv
+*.xlsx
+config.json
+report.json
+report.html
+*-export/
+fs/
+sdp/
+__pycache__/
+*.pyc
